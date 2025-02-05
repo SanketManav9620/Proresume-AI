@@ -204,7 +204,7 @@ const cors = require("cors");
 const multer = require("multer");
 const pdf = require("pdf-parse");
 const fetch = require("node-fetch");
-const linkedIn = require("linkedin-jobs-api"); // LinkedIn Jobs API module
+const linkedIn = require("linkedin-jobs-api");
 const app = express();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -218,8 +218,6 @@ const MAX_LIMITS = {
   format: 15,
   education: 15,
 };
-
-// Function to scale raw scores to a maximum value
 function scaleScores(rawScores) {
   let scaledScores = {};
   let totalScore = 0;
@@ -233,8 +231,6 @@ function scaleScores(rawScores) {
   });
   return { scaledScores, totalScore };
 }
-
-// Function to search for jobs on LinkedIn using LinkedIn Jobs API
 async function searchJobs(queryOptions) {
   try {
     const response = await linkedIn.query(queryOptions);
@@ -257,8 +253,6 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
     if (!text) {
       return res.status(400).json({ error: "Unable to extract text from PDF" });
     }
-
-    // Define the prompt for resume analysis, including location extraction and job-related insights
     const prompt = `
     As a senior career coach and resume analyst with 20 years of experience in talent acquisition and career development, analyze the following resume. Follow these exact guidelines without deviation. Your analysis must be structured only in the JSON format provided below. Do not include any additional text, comments, or explanations outside of the JSON response.
 
@@ -325,8 +319,6 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
     - **Provide realistic salary insights based on the user's location, skills, and experience.**
     - **Search for jobs based on the extracted location, experience level, and skills.**
     `;
-
-    // Make request to Cohere API for resume analysis
     const response = await fetch("https://api.cohere.ai/v1/generate", {
       method: "POST",
       headers: {
@@ -340,13 +332,11 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
         temperature: 0.7,
       }),
     });
-
     if (!response.ok) {
       const errorMessage = await response.text();
       console.error("API Error:", errorMessage);
       throw new Error(`API request failed: ${errorMessage}`);
     }
-
     const completion = await response.json();
     console.log("Raw AI Response:", completion);
     const responseContent = completion?.generations?.[0]?.text || "";
@@ -367,28 +357,21 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
       });
       return;
     }
-
     if (!analysis.score?.breakdown) {
       throw new Error("Missing score breakdown in the response");
     }
-
     const { scaledScores, totalScore } = scaleScores(analysis.score.breakdown);
-
     analysis.score.breakdown = scaledScores;
     analysis.score.total = totalScore;
-
-    // Perform job search based on extracted data
     const jobQuery = {
       keyword: analysis.skills_analysis.strong_skills.join(", "),
       location: analysis.location,
       experienceLevel: analysis.experience_level,
-      limit: 5, // Limit to 5 job results for now
+      limit: 5,
       page: "0",
     };
-
     const jobSearchResults = await searchJobs(jobQuery);
-    analysis.job_search_results = jobSearchResults; // Include job search results in the response
-
+    analysis.job_search_results = jobSearchResults;
     res.json(analysis);
   } catch (error) {
     console.error("Error:", error);
