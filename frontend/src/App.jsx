@@ -1,8 +1,7 @@
 import PropTypes from "prop-types"; // Import PropTypes for validation
 // import Waves from "./blocks/Backgrounds/Waves";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://192.168.29.47:8080/analyze";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/analyze";
 
 import { useState, useEffect, useRef } from "react";
 import {
