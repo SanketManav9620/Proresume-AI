@@ -197,19 +197,7 @@ const JobListingsSection = ({ jobs = [] }) => {
   if (!jobs?.length) return null;
 
   // Display all jobs but ensure at least 5 are visible
-  const displayJobs =
-    jobs.length >= 5
-      ? jobs
-      : [
-          ...jobs,
-          ...Array(5 - jobs.length).fill({
-            position: "Position Open",
-            company: "Company Name",
-            location: "Location",
-            agoTime: "Recent",
-            jobUrl: "#",
-          }),
-        ];
+  const displayJobs = jobs.length;
 
   return (
     <div className="p-6 sm:p-8 w-full mt-8">
