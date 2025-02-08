@@ -370,8 +370,10 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
       limit: 5,
       page: "0",
     };
-    const jobSearchResults = await searchJobs(jobQuery);
-    analysis.job_search_results = jobSearchResults;
+    if (analysis.location != null) {
+      const jobSearchResults = await searchJobs(jobQuery);
+      analysis.job_search_results = jobSearchResults;
+    }
     res.json(analysis);
   } catch (error) {
     console.error("Error:", error);

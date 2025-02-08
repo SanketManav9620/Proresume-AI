@@ -1,8 +1,4 @@
-import PropTypes from "prop-types"; // Import PropTypes for validation
-// import Waves from "./blocks/Backgrounds/Waves";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/analyze";
-
+import PropTypes from "prop-types";
 import { useState, useEffect, useRef } from "react";
 import {
   Upload,
@@ -18,9 +14,8 @@ import {
 } from "lucide-react";
 import Waves from "./blocks/Backgrounds/Waves/Waves";
 import useCanvasCursor from "./blocks/canvasCursor";
-
-// Dynamic Background Animation Component
-const AnimatedBackground = () => (
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/analyze";
+const AnimBg = () => (
   <div className="fixed inset-0 -z-10 bg-black opacity-50">
     <div className="absolute inset-0 bg-grid-white/[0.2] bg-grid" />
     <div className="absolute inset-0 flex items-center justify-center">
@@ -29,11 +24,8 @@ const AnimatedBackground = () => (
     </div>
   </div>
 );
-
-// Scroll Progress Indicator
-const ScrollProgress = () => {
+const ScrollP = () => {
   const [progress, setProgress] = useState(0);
-
   useEffect(() => {
     const updateProgress = () => {
       const scrollHeight =
@@ -41,7 +33,6 @@ const ScrollProgress = () => {
       const scrolled = (window.scrollY / scrollHeight) * 100;
       setProgress(scrolled);
     };
-
     window.addEventListener("scroll", updateProgress);
     return () => window.removeEventListener("scroll", updateProgress);
   }, []);
@@ -55,149 +46,69 @@ const ScrollProgress = () => {
     </div>
   );
 };
-
-// Section Container Component
-const Section = ({ children, className = "" }) => (
-  <div
-    className={`min-h-screen w-screen flex items-center justify-center p-4 sm:p-6 ${className}`}
-  >
-    <div className="w-full max-w-7xl">{children}</div>
+const Hero = ({ funcUpload, loading }) => (
+  <div className=" w-screen p-4 sm:p-6  relative overflow-hidden flex items-center justify-center min-h-screen">
+    <div className="w-full max-w-7xl">
+      <div className="text-center space-y-8">
+        <div className="space-y-4">
+          <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+            ProResume AI
+          </h1>
+          <p className="text-lg sm:text-xl text-purple-100">
+            Transform your career with AI insights
+          </p>
+        </div>
+        <label className="block w-full max-w-xl mx-auto cursor-pointer">
+          <div className="bg-black backdrop-blur-lg p-6 sm:p-8 rounded-2xl border-2 border-dashed border-purple-300/50 hover:border-purple-300 transition-all group">
+            <div className="flex flex-col text-purple-300 items-center gap-4">
+              <Upload className="w-16 h-16 text-green-400 group-hover:text-purple-400 transition-colors" />
+              <div className="text-center">
+                <p className="text-xl font-medium">Drop your resume here</p>
+                <p>or click to browse (PDF only)</p>
+              </div>
+            </div>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={funcUpload}
+              className="hidden"
+              disabled={loading}
+            />
+          </div>
+        </label>
+        {!loading && (
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce">
+            <ChevronDown className="w-8 h-8 text-purple-300" />
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+);
+Hero.propTypes = {
+  funcUpload: PropTypes.func,
+  loading: PropTypes.bool,
+};
+const Loader = () => (
+  <div className="min-h-screen w-screen p-4 sm:p-6 absolute inset-0 flex backdrop-blur-3xl items-center justify-center z-50 bg-black/80">
+    <div className="w-full max-w-7xl">
+      <div className="flex flex-col items-center justify-center gap-8 text-white">
+        <div className="relative">
+          <div className="w-24 h-24 rounded-full border-4 border-purple-300/20 border-t-purple-300 animate-spin" />
+          <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-purple-300" />
+        </div>
+        <div className="text-lg sm:text-xl text-purple-200">
+          Analyzing your resume... <br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RuntimeTerrors 🥷
+        </div>
+      </div>
+    </div>
   </div>
 );
 
-Section.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-};
-
-// Hero Section with File Upload
-const HeroSection = ({ onFileUpload, loading }) => (
-  <Section className="relative overflow-hidden flex items-center justify-center min-h-screen">
-    <div className="text-center space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-          ProResume AI
-        </h1>
-        <p className="text-lg sm:text-xl text-purple-100">
-          Transform your career journey with AI-powered insights
-        </p>
-      </div>
-
-      <label className="block w-full max-w-xl mx-auto cursor-pointer">
-        <div className="bg-black backdrop-blur-lg p-6 sm:p-8 rounded-2xl border-2 border-dashed border-purple-300/50 hover:border-purple-300 transition-all group">
-          <div className="flex flex-col text-purple-300 items-center gap-4">
-            <Upload className="w-16 h-16 text-green-400 group-hover:text-purple-400 transition-colors" />
-            <div className="text-center">
-              <p className="text-xl font-medium">Drop your resume here</p>
-              <p>or click to browse (PDF only)</p>
-            </div>
-          </div>
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={onFileUpload}
-            className="hidden"
-            disabled={loading}
-          />
-        </div>
-      </label>
-
-      {!loading && (
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-8 h-8 text-purple-300" />
-        </div>
-      )}
-    </div>
-  </Section>
-);
-
-HeroSection.propTypes = {
-  onFileUpload: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-};
-
-// Results Section Components
-const ScoreSection = ({ score }) => (
-  <Section>
-    <div className="bg-black backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-white">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-        Resume Score Analysis
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="col-span-full">
-          <div className="flex items-baseline gap-4">
-            <div className="text-5xl sm:text-7xl font-bold text-purple-300">
-              {score.total}
-            </div>
-            <div className="text-2xl text-purple-200">/ 100</div>
-          </div>
-        </div>
-        {Object.entries(score.breakdown).map(([key, value]) => (
-          <div key={key} className="bg-black rounded-xl p-4 sm:p-6">
-            <div className="text-lg text-purple-200 capitalize mb-2">{key}</div>
-            <div className="flex items-end gap-2">
-              <div className="text-3xl font-bold text-purple-300">{value}</div>
-              <div className="text-purple-200">
-                /
-                {key === "skills" || key === "experience"
-                  ? "25"
-                  : key === "achievements"
-                  ? "20"
-                  : "15"}
-              </div>
-            </div>
-            <div className="w-full h-2 bg-purple-100/30 rounded-full mt-4">
-              <div
-                className="h-full bg-purple-400 rounded-full transition-all duration-500"
-                style={{
-                  width: `${
-                    (value /
-                      (key === "skills" || key === "experience"
-                        ? 25
-                        : key === "achievements"
-                        ? 20
-                        : 15)) *
-                    100
-                  }%`,
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </Section>
-);
-
-ScoreSection.propTypes = {
-  score: PropTypes.shape({
-    total: PropTypes.number.isRequired,
-    breakdown: PropTypes.object.isRequired,
-  }).isRequired,
-};
-
-// Loader Component
-const Loader = () => (
-  <Section className="absolute inset-0 flex backdrop-blur-3xl items-center justify-center z-50 bg-black/80">
-    <div className="flex flex-col items-center justify-center gap-8 text-white">
-      <div className="relative">
-        <div className="w-24 h-24 rounded-full border-4 border-purple-300/20 border-t-purple-300 animate-spin" />
-        <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-purple-300" />
-      </div>
-      <div className="text-lg sm:text-xl text-purple-200">
-        Analyzing your resume... <br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RuntimeTerrors 🥷
-      </div>
-    </div>
-  </Section>
-);
-
-const JobListingsSection = ({ jobs = [] }) => {
+const Jobs = ({ jobs = [] }) => {
   if (!jobs?.length) return null;
-
-  // Display all jobs but ensure at least 5 are visible
-  const displayJobs = jobs.length;
-
+  const displayJobs = jobs;
   return (
     <div className="p-6 sm:p-8 w-full mt-8">
       <div className="bg-black w-full lg:max-w-screen-xl rounded-2xl text-white">
@@ -265,26 +176,15 @@ const JobListingsSection = ({ jobs = [] }) => {
   );
 };
 
-JobListingsSection.propTypes = {
-  jobs: PropTypes.arrayOf(
-    PropTypes.shape({
-      position: PropTypes.string.isRequired,
-      company: PropTypes.string.isRequired,
-      location: PropTypes.string.isRequired,
-      jobUrl: PropTypes.string.isRequired,
-      agoTime: PropTypes.string.isRequired,
-      companyLogo: PropTypes.string,
-    })
-  ),
+Jobs.propTypes = {
+  jobs: PropTypes.array,
 };
-
-// Main Component
 export default function ResumeAnalyzer() {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const resultsRef = useRef(null);
-  const handleFileUpload = async (e) => {
+  const fileUp = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -336,26 +236,31 @@ export default function ResumeAnalyzer() {
           yGap={36}
         />
 
-        <AnimatedBackground />
-        <ScrollProgress />
-        <HeroSection onFileUpload={handleFileUpload} loading={loading} />
+        <AnimBg />
+        <ScrollP />
+        <Hero funcUpload={fileUp} loading={loading} />
         {loading && <Loader />}
         <div
+          ref={resultsRef}
           id="results-container"
           className="bg-[#8A00C4] backdrop-blur-lg rounded-2xl p-4 sm:p-8 text-white"
         >
           {error && (
-            <Section>
-              <div className="bg-red-500 backdrop-blur-lg text-red-200 p-4 sm:p-8 rounded-2xl border border-red-300/20">
-                <AlertTriangle className="w-12 h-12 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Analysis Failed</h3>
-                <p>{error}</p>
+            <div className="min-h-screen w-screen flex items-center justify-center p-4 sm:p-6 ">
+              <div className="w-full max-w-7xl">
+                <div className="bg-red-500 backdrop-blur-lg text-red-200 p-4 sm:p-8 rounded-2xl border border-red-300/20">
+                  <AlertTriangle className="w-12 h-12 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">
+                    Analysis Failed
+                  </h3>
+                  <p>{error}</p>
+                </div>
               </div>
-            </Section>
+            </div>
           )}
           {results && !loading && (
             <div ref={resultsRef} className="w-full">
-              {/* Resume Score Analysis Section */}
+              {/* Resume Score Section */}
               <div className="bg-black rounded-2xl p-4 sm:p-8 text-white">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-4">
                   Resume Score Analysis
@@ -368,7 +273,6 @@ export default function ResumeAnalyzer() {
                   {results?.score?.breakdown &&
                     Object.entries(results.score.breakdown).map(
                       ([key, value]) => {
-                        // Define max values for each category
                         const maxScores = {
                           skills: 25,
                           experience: 25,
@@ -377,7 +281,7 @@ export default function ResumeAnalyzer() {
                           education: 15,
                         };
 
-                        const maxScore = maxScores[key] || 25; // Default to 25 if the category is not listed
+                        const maxScore = maxScores[key];
 
                         return (
                           <div
@@ -391,7 +295,7 @@ export default function ResumeAnalyzer() {
                               {value}{" "}
                               <span className="text-sm">/ {maxScore}</span>
                             </div>
-                            <div className="w-full bg-black/20 h-2 rounded-lg overflow-hidden">
+                            <div className="w-full bg-neutral-800 h-2 rounded-lg overflow-hidden">
                               <div
                                 className="h-full bg-purple-400 rounded-lg"
                                 style={{
@@ -406,7 +310,7 @@ export default function ResumeAnalyzer() {
                 </div>
               </div>
 
-              {/* Recommended Roles Section */}
+              {/* Recommended Roles*/}
               {results?.roles?.length > 0 && (
                 <div className="bg-black rounded-2xl p-4 sm:p-8 text-white mt-8">
                   <h2 className="text-2xl sm:text-3xl font-bold mb-4">
@@ -443,7 +347,7 @@ export default function ResumeAnalyzer() {
                 </div>
               )}
 
-              {/* Skills Analysis Section */}
+              {/* Skills Section */}
               <div className="bg-black rounded-2xl p-4 sm:p-8 text-white mt-8">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-4">
                   Skills Analysis
@@ -518,7 +422,7 @@ export default function ResumeAnalyzer() {
                 </div>
               </div>
 
-              {/* Detailed Feedback Section */}
+              {/* Detailed Feedback*/}
               <div className="bg-black rounded-2xl p-4 sm:p-8 text-purple-300 mt-8">
                 <h2 className="text-2xl sm:text-3xl text-white font-bold mb-4">
                   Detailed Feedback
@@ -582,13 +486,13 @@ export default function ResumeAnalyzer() {
                   </div>
                 </div>
               </div>
-              {/* Job Listings Section */}
+              {/* Job Section */}
               {results?.job_search_results?.length > 0 && (
                 <div className="bg-black p-4 sm:p-6 rounded-xl border border-purple-300/20 mt-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
                     Job Listings
                   </h2>
-                  <JobListingsSection jobs={results.job_search_results} />
+                  <Jobs jobs={results.job_search_results} />
                 </div>
               )}
             </div>
