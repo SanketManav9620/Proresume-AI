@@ -109,7 +109,7 @@ const Loader = () => (
         <div className="text-lg sm:text-xl text-purple-200 text-center">
           Analyzing your resume... <br />
           <span className="text-sm text-purple-400 mt-2 block">
-            Made with ❤️ by -Krish 🥷
+            Made with ❤️ by -Sanket 🥷
           </span>
         </div>
       </div>
