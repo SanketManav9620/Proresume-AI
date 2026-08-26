@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Waves from "./blocks/Backgrounds/Waves/Waves";
 import useCanvasCursor from "./blocks/canvasCursor";
+import { ScrollP } from "./componetsAll/scroll";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/analyze";
 const AnimBg = () => (
   <div className="fixed inset-0 -z-10 bg-black opacity-50">
@@ -24,28 +25,7 @@ const AnimBg = () => (
     </div>
   </div>
 );
-const ScrollP = () => {
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const updateProgress = () => {
-      const scrollHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const scrolled = (window.scrollY / scrollHeight) * 100;
-      setProgress(scrolled);
-    };
-    window.addEventListener("scroll", updateProgress);
-    return () => window.removeEventListener("scroll", updateProgress);
-  }, []);
 
-  return (
-    <div className="fixed top-0 left-0 w-full h-1 z-50">
-      <div
-        className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-150"
-        style={{ width: `${progress}%` }}
-      />
-    </div>
-  );
-};
 const Hero = ({ funcUpload, loading }) => (
   <div className=" w-screen p-4 sm:p-6  relative overflow-hidden flex items-center justify-center min-h-screen">
     <div className="w-full max-w-7xl">
