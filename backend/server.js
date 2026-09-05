@@ -109,6 +109,16 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
           "currency": "<currency>"
         },
         "salary_factors": ["<factor1>", "<factor2>", "<factor3>"]
+      },
+      "ats_compatibility": {
+        "score": <0-100>,
+        "status": "<Pass | Needs Optimization>",
+        "checks": [
+          { "name": "Standard PDF Format", "passed": true, "tip": "PDF structure parsed cleanly" },
+          { "name": "Section Headers", "passed": true, "tip": "Core resume headers present" },
+          { "name": "Action Verbs & Impact", "passed": true, "tip": "Strong verbs used throughout" },
+          { "name": "Keyword & Skill Density", "passed": true, "tip": "Industry keywords matching roles" }
+        ]
       }
     }
 

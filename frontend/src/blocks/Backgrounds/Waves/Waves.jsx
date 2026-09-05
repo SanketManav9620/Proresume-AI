@@ -144,7 +144,9 @@ export default function Waves({
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
+    if (!canvas || !container) return;
     ctxRef.current = canvas.getContext("2d");
+    if (!ctxRef.current) return;
 
     function setSize() {
       boundingRef.current = container.getBoundingClientRect();
@@ -228,26 +230,29 @@ export default function Waves({
     function drawLines() {
       const { width, height } = boundingRef.current;
       const ctx = ctxRef.current;
+      if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
-      ctx.beginPath();
+      ctx.lineWidth = 1.2;
       ctx.strokeStyle = lineColor;
+
       linesRef.current.forEach((points) => {
-        let p1 = moved(points[0], false);
-        ctx.moveTo(p1.x, p1.y);
-        points.forEach((p, idx) => {
-          const isLast = idx === points.length - 1;
-          p1 = moved(p, !isLast);
-          const p2 = moved(
-            points[idx + 1] || points[points.length - 1],
-            !isLast
-          );
-          ctx.lineTo(p1.x, p1.y);
-          if (isLast) ctx.moveTo(p2.x, p2.y);
-        });
+        if (points.length < 2) return;
+        ctx.beginPath();
+        const p0 = moved(points[0], true);
+        ctx.moveTo(p0.x, p0.y);
+
+        for (let i = 0; i < points.length - 1; i++) {
+          const p1 = moved(points[i], true);
+          const p2 = moved(points[i + 1], true);
+          const xc = (p1.x + p2.x) / 2;
+          const yc = (p1.y + p2.y) / 2;
+          ctx.quadraticCurveTo(p1.x, p1.y, xc, yc);
+        }
+        ctx.stroke();
       });
-      ctx.stroke();
     }
 
+    let animId;
     function tick(t) {
       const mouse = mouseRef.current;
 
@@ -264,12 +269,9 @@ export default function Waves({
       mouse.ly = mouse.y;
       mouse.a = Math.atan2(dy, dx);
 
-      container.style.setProperty("--x", `${mouse.sx}px`);
-      container.style.setProperty("--y", `${mouse.sy}px`);
-
       movePoints(t);
       drawLines();
-      requestAnimationFrame(tick);
+      animId = requestAnimationFrame(tick);
     }
 
     function onResize() {
@@ -280,6 +282,7 @@ export default function Waves({
       updateMouse(e.pageX, e.pageY);
     }
     function onTouchMove(e) {
+      if (!e.touches || !e.touches[0]) return;
       const touch = e.touches[0];
       updateMouse(touch.clientX, touch.clientY);
     }
@@ -299,12 +302,13 @@ export default function Waves({
 
     setSize();
     setLines();
-    requestAnimationFrame(tick);
+    animId = requestAnimationFrame(tick);
     window.addEventListener("resize", onResize);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
+      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("touchmove", onTouchMove);
@@ -332,14 +336,6 @@ export default function Waves({
       }}
       className={`absolute top-0 left-0 w-full h-full overflow-hidden ${className}`}
     >
-      <div
-        className="absolute top-0 left-0 rounded-full w-[0.5rem] h-[0.5rem]"
-        style={{
-          transform:
-            "translate3d(calc(var(--x) - 50%), calc(var(--y) - 50%), 0)",
-          willChange: "transform",
-        }}
-      />
       <canvas ref={canvasRef} className="block w-full h-full" />
     </div>
   );
