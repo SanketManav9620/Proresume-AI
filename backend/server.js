@@ -46,7 +46,7 @@ async function searchJobs(queryOptions) {
   }
 }
 
-app.post("/analyze", upload.single("resume"), async (req, res) => {
+app.post(["/analyze", "/"], upload.single("resume"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });

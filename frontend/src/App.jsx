@@ -29,7 +29,10 @@ import Waves from "./blocks/Backgrounds/Waves/Waves";
 import useCanvasCursor from "./blocks/canvasCursor";
 import { ScrollP } from "./componetsAll/scroll";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/analyze";
+const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/analyze";
+const API_URL = (rawApiUrl.endsWith("/analyze") || rawApiUrl.endsWith("/"))
+  ? rawApiUrl
+  : `${rawApiUrl}/analyze`;
 
 const Navbar = ({ onDemoClick }) => (
   <header className="sticky top-0 z-40 w-full border-b border-purple-500/20 bg-[#05020f]/85 backdrop-blur-md px-4 sm:px-8 py-3.5 flex items-center justify-between text-white">
