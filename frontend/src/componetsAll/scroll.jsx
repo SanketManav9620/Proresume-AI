@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const ScrollP = () => {
   const [progress, setProgress] = useState(0);

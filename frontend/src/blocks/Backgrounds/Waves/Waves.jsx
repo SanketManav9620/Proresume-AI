@@ -4,7 +4,7 @@
 	2-5-2025
 */
 
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 Waves.propTypes = {
   lineColor: PropTypes.string,
