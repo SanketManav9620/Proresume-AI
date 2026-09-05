@@ -124,18 +124,27 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
     - **Provide realistic salary insights based on the user's location, skills, and experience.**
     - **Search for jobs based on the extracted location, experience level, and skills.**
     `;
-    const response = await fetch("https://api.cohere.ai/v1/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.COHERE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "command-r-plus",
-        message: prompt,
-        temperature: 0.7,
-      }),
-    });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not configured in backend environment");
+    }
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.7,
+          },
+        }),
+      }
+    );
     if (!response.ok) {
       const errorMessage = await response.text();
       console.error("API Error:", errorMessage);
@@ -143,7 +152,8 @@ app.post("/analyze", upload.single("resume"), async (req, res) => {
     }
     const completion = await response.json();
     console.log("Raw AI Response:", completion);
-    const responseContent = completion?.text || completion?.generations?.[0]?.text || "";
+    const responseContent =
+      completion?.candidates?.[0]?.content?.parts?.[0]?.text || "";
     if (!responseContent) {
       throw new Error("Empty or invalid response content from AI provider");
     }

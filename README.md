@@ -39,7 +39,7 @@ ProResume AI is an intelligent resume analysis platform that helps job seekers o
 - PDF-parse for document processing
 
 ### APIs
-- Cohere AI for resume analysis
+- Gemini AI (Gemini 3.6 Flash) for resume analysis
 - LinkedIn Jobs API for job matching
 
 ## 🛠️ Installation
@@ -63,7 +63,7 @@ npm install
 3. Create environment variables
 ```bash
 # Backend .env
-COHERE_API_KEY=your_cohere_api_key
+GEMINI_API_KEY=your_gemini_api_key
 PORT=8080
 
 # Frontend .env
