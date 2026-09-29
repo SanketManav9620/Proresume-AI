@@ -2,14 +2,22 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const pdf = require("pdf-parse");
+const pdf = require("pdf-parse/lib/pdf-parse.js");
 const fetch = require("node-fetch");
 const linkedIn = require("linkedin-jobs-api");
 const app = express();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
+
+app.options("*", cors());
 
 app.get("/", (req, res) => {
   res.send("ProResume AI Backend is running");
@@ -38,10 +46,11 @@ function scaleScores(rawScores) {
 }
 async function searchJobs(queryOptions) {
   try {
-    const response = await linkedIn.query(queryOptions);
-    return response;
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Job search timeout")), 5000));
+    const response = await Promise.race([linkedIn.query(queryOptions), timeout]);
+    return response || [];
   } catch (error) {
-    console.error("Error searching jobs:", error);
+    console.error("Error searching jobs:", error.message);
     return [];
   }
 }
@@ -52,8 +61,17 @@ app.post(["/analyze", "/"], upload.single("resume"), async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const data = await pdf(req.file.buffer);
-    const text = data.text.trim();
+    let data;
+    try {
+      data = await pdf(new Uint8Array(req.file.buffer));
+    } catch (pdfErr) {
+      return res.status(400).json({
+        error: "Failed to parse PDF document",
+        details: pdfErr.message,
+      });
+    }
+
+    const text = (data?.text || "").trim();
 
     if (!text) {
       return res.status(400).json({ error: "Unable to extract text from PDF" });
@@ -136,29 +154,51 @@ app.post(["/analyze", "/"], upload.single("resume"), async (req, res) => {
     `;
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not configured in backend environment");
+      throw new Error(
+        "GEMINI_API_KEY is not configured in Vercel environment variables. Please add GEMINI_API_KEY in your Vercel project Settings -> Environment Variables."
+      );
     }
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.7,
-          },
-        }),
+    const modelsToTry = [
+      "gemini-3.5-flash-lite",
+      "gemini-3.6-flash",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash",
+    ];
+    let response;
+    let lastError = "";
+
+    for (const modelName of modelsToTry) {
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                responseMimeType: "application/json",
+                temperature: 0.7,
+              },
+            }),
+          }
+        );
+        if (res.ok) {
+          response = res;
+          break;
+        }
+        lastError = await res.text();
+        console.warn(`Model ${modelName} returned status ${res.status}: ${lastError}`);
+      } catch (err) {
+        lastError = err.message;
       }
-    );
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      console.error("API Error:", errorMessage);
-      throw new Error(`API request failed: ${errorMessage}`);
+    }
+
+    if (!response || !response.ok) {
+      throw new Error(`API request failed across all models: ${lastError}`);
     }
     const completion = await response.json();
     console.log("Raw AI Response:", completion);

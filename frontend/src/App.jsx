@@ -280,9 +280,16 @@ export default function ResumeAnalyzer() {
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Failed to analyze resume");
+      const data = await response.json().catch(() => null);
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errorMsg =
+          data?.details ||
+          data?.error ||
+          `Server error (${response.status}). Please check Vercel environment variables and backend logs.`;
+        throw new Error(errorMsg);
+      }
+
       setResults(data);
     } catch (err) {
       setError(err.message);
