@@ -117,5 +117,5 @@ proresume-ai/
 
 ---
 
-Built with ❤️ by Krish
+Built with ❤️ by Sanket Kumar
  
