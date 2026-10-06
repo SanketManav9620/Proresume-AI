@@ -68,3 +68,4 @@ export const DetailedFeedback = ({ feedback }) => (
 DetailedFeedback.propTypes = {
   feedback: PropTypes.object,
 };
+ 

@@ -81,3 +81,4 @@ async function analyzeResumeController(req, res) {
 module.exports = {
   analyzeResumeController,
 };
+ 

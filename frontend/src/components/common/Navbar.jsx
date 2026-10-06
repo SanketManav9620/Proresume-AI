@@ -38,3 +38,4 @@ export const Navbar = ({ onDemoClick }) => (
 Navbar.propTypes = {
   onDemoClick: PropTypes.func,
 };
+ 

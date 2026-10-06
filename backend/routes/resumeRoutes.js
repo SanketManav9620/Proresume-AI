@@ -16,3 +16,4 @@ router.post("/analyze", upload.single("resume"), analyzeResumeController);
 router.post("/", upload.single("resume"), analyzeResumeController);
 
 module.exports = router;
+ 

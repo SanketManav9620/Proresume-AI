@@ -55,3 +55,4 @@ export const AtsCompatibility = ({ atsData }) => {
 AtsCompatibility.propTypes = {
   atsData: PropTypes.object,
 };
+ 

@@ -71,3 +71,4 @@ Hero.propTypes = {
   loading: PropTypes.bool,
   onDemoClick: PropTypes.func,
 };
+ 

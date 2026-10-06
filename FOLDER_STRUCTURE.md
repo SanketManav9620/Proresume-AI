@@ -220,3 +220,4 @@ sequenceDiagram
 2. **High Maintainability & Testability:** Individual services (e.g., `aiService.js`, `pdfService.js`) can be independently edited, mocked, or unit-tested without loading Express routes.
 3. **Vercel Serverless Ready:** `backend/server.js` acts as both a standalone node server (`app.listen`) and a serverless entry point exported for `@vercel/node`.
 4. **Reusability & Clean UI:** Frontend dashboard sections are broken down into self-contained React components (`<AtsCompatibility />`, `<SalaryInsights />`, `<JobMatches />`), keeping `App.jsx` clean and concise.
+ 

@@ -118,3 +118,4 @@ proresume-ai/
 ---
 
 Built with ❤️ by Krish
+ 

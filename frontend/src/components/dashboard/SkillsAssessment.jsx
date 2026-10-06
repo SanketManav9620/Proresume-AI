@@ -81,3 +81,4 @@ export const SkillsAssessment = ({ skillsAnalysis }) => (
 SkillsAssessment.propTypes = {
   skillsAnalysis: PropTypes.object,
 };
+ 

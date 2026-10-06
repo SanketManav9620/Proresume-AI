@@ -105,3 +105,4 @@ export const JobMatches = ({ jobs = [] }) => {
 JobMatches.propTypes = {
   jobs: PropTypes.array,
 };
+ 

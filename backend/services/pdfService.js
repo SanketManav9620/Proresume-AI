@@ -30,3 +30,4 @@ async function extractTextFromPDF(fileBuffer) {
 module.exports = {
   extractTextFromPDF,
 };
+ 

@@ -47,3 +47,4 @@ export const CategoryScores = ({ breakdown }) => {
 CategoryScores.propTypes = {
   breakdown: PropTypes.object,
 };
+ 

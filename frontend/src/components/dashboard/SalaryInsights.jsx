@@ -62,3 +62,4 @@ export const SalaryInsights = ({ salaryData }) => {
 SalaryInsights.propTypes = {
   salaryData: PropTypes.object,
 };
+ 
