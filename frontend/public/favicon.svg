@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0728" />
+      <stop offset="50%" stop-color="#2a085c" />
+      <stop offset="100%" stop-color="#6b21a8" />
+    </linearGradient>
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="50%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#e9d5ff" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="28" fill="url(#bgGrad)" />
+  <rect width="94" height="94" x="3" y="3" rx="25" fill="none" stroke="#a855f7" stroke-width="2" stroke-opacity="0.4" />
+  <!-- Sparkles Star -->
+  <path d="M50 20 C50 35, 65 50, 80 50 C65 50, 50 65, 50 80 C50 65, 35 50, 20 50 C35 50, 50 35, 50 20 Z" fill="url(#starGrad)" />
+  <!-- Small secondary sparkle -->
+  <path d="M72 24 C72 29, 77 34, 82 34 C77 34, 72 39, 72 44 C72 39, 67 34, 62 34 C67 34, 72 29, 72 24 Z" fill="#e9d5ff" opacity="0.8" />
+</svg>
